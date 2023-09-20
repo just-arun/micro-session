@@ -7,7 +7,7 @@ type Redis struct {
 }
 
 type Env struct {
-	UserSession    Redis `mapstructure:"userSession"`
-	GeneralSession Redis `mapstructure:"generalSession"`
+	UserSession    Redis  `mapstructure:"userSession"`
+	GeneralSession Redis  `mapstructure:"generalSession"`
+	Secret         string `mapstructure:"secret"`
 }
-

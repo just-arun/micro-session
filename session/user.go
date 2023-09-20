@@ -16,11 +16,11 @@ func UserSession() userSession {
 	return userSession{}
 }
 
-func (r userSession) Set(sessionRedisDB *redis.Client, sessionID string, userID uint) (err error) {
+func (r userSession) Set(sessionRedisDB *redis.Client, sessionID string, userID uint, role []string) (err error) {
 	ctx := context.Background()
 	defer ctx.Done()
 	key := fmt.Sprintf("session-%v-%v", sessionID, userID)
-	payload := model.UserSessionData{UserID: userID, Time: time.Now()}
+	payload := model.UserSessionData{UserID: userID, Time: time.Now(), Role: role}
 	da, err := json.Marshal(payload)
 	if err != nil {
 		return err
@@ -65,13 +65,9 @@ func (r userSession) GetManyByUserID(sessionRedisDB *redis.Client, userID uint) 
 	c := make(chan model.UserSessionData, count)
 	defer close(c)
 
-	result := func() {
-		for _, k := range val {
-			go r.GetSessionByKey(sessionRedisDB, k, c)
-		}
+	for _, k := range val {
+		go r.GetSessionByKey(sessionRedisDB, k, c)
 	}
-	
-	result()
 
 	for i := 0; i < count; i++ {
 		data = append(data, <-c)

@@ -11,5 +11,6 @@ type GeneralSessionType redis.Client
 
 type UserSessionData struct {
 	UserID uint
+	Role   []string
 	Time   time.Time
 }
