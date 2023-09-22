@@ -20,7 +20,7 @@ func (r userSession) Set(sessionRedisDB *redis.Client, sessionID string, userID 
 	ctx := context.Background()
 	defer ctx.Done()
 	key := fmt.Sprintf("session-%v-%v", sessionID, userID)
-	payload := model.UserSessionData{UserID: userID, Time: time.Now(), Role: role}
+	payload := model.UserSessionData{UserID: userID, Time: time.Now(), Roles: role}
 	da, err := json.Marshal(payload)
 	if err != nil {
 		return err
@@ -87,4 +87,18 @@ func (r userSession) GetSessionByKey(sessionRedisDB *redis.Client, key string, c
 	}
 	c <- data
 	return
+}
+
+func (r userSession) DelUserSessionBySessionID(userSessionRedisDB *redis.Client, sessionID string) (err error) {
+	ctx := context.Background()
+	defer ctx.Done()
+	keys := fmt.Sprintf("session-%v-*", sessionID)
+	return userSessionRedisDB.Del(context.Background(), keys).Err()
+}
+
+func (r userSession) DelUserSessionByUserID(userSessionRedisDB *redis.Client, userID uint) (err error) {
+	ctx := context.Background()
+	defer ctx.Done()
+	keys := fmt.Sprintf("session-*-%v", userID)
+	return userSessionRedisDB.Del(context.Background(), keys).Err()
 }

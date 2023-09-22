@@ -1,13 +1,20 @@
 package model
 
-type Redis struct {
+import "time"
+
+type redisEnv struct {
 	Address  string `mapstructure:"address"`
 	Password string `mapstructure:"password"`
 	DB       int    `mapstructure:"db"`
 }
 
+type otp struct {
+	ExpireTime time.Duration `mapstructure:"expireTime"`
+}
+
 type Env struct {
-	UserSession    Redis  `mapstructure:"userSession"`
-	GeneralSession Redis  `mapstructure:"generalSession"`
-	Secret         string `mapstructure:"secret"`
+	UserSession    redisEnv `mapstructure:"userSession"`
+	GeneralSession redisEnv `mapstructure:"generalSession"`
+	Secret         string   `mapstructure:"secret"`
+	OTP            otp      `mapstructure:"otp"`
 }
