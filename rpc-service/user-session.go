@@ -95,20 +95,3 @@ func (r *SessionService) GetUserSessionRefreshToken(ctx context.Context, req *pb
 		Refresh: req.RefreshToken,
 	}, nil
 }
-func (r *SessionService) VerifyUserSession(ctx context.Context, req *pb.VerifyUserSessionParams) (*pb.VerifyUserSessionResponse, error) {
-	key, _, err := util.Jwt().ExtractClaims(r.Env.Secret, req.Token)
-	if err != nil {
-		return nil, err
-	}
-
-	data, err := session.UserSession().GetOneBySessionID(r.UserSessionRedisDB, key)
-	if err != nil {
-		return nil, err
-	}
-
-	return &pb.VerifyUserSessionResponse{
-		Ok:     true,
-		UserID: uint64(data.UserID),
-		Roles:  data.Roles,
-	}, nil
-}

@@ -19,7 +19,7 @@ func OTP() otp {
 func (st otp) SetOTP(rDB *redis.Conn, otp model.OTP, expireOne time.Duration) error {
 	ctx := context.Background()
 	defer ctx.Done()
-	key := fmt.Sprintf("%v-%v-%v", otp.Key, otp.UserID, otp.UserID)
+	key := fmt.Sprintf("%v-%v-%v", otp.Key, otp.UserID, otp.OTP)
 	payload, err := json.Marshal(otp)
 	if err != nil {
 		return err
@@ -30,7 +30,7 @@ func (st otp) SetOTP(rDB *redis.Conn, otp model.OTP, expireOne time.Duration) er
 func (st otp) GetOTP(rDB *redis.Conn, otp model.OTP, expireOne time.Duration) (data *model.OTP, err error) {
 	ctx := context.Background()
 	defer ctx.Done()
-	key := fmt.Sprintf("%v-%v-%v", otp.Key, otp.UserID, otp.UserID)
+	key := fmt.Sprintf("%v-%v-%v", otp.Key, otp.UserID, otp.OTP)
 	result, err := rDB.Get(ctx, key).Result()
 	if err != nil {
 		return nil, err
