@@ -11,11 +11,11 @@ import (
 func (r *SessionService) SetOTP(ctx context.Context, req *pb.OTPPayload) (*pb.OkResponse, error) {
 	err := session.
 		OTP().
-		SetOTP(r.GeneralSessionRedisDB.Conn(), model.OTP{
+		SetOTP(r.Ctx.GeneralSessionRedisDB.Conn(), model.OTP{
 			OTP:    req.Otp,
 			Key:    req.Key,
 			UserID: uint(req.UserID),
-		}, r.Env.OTP.ExpireTime)
+		}, r.Ctx.Env.OTP.ExpireTime)
 	if err != nil {
 		return nil, err
 	}
@@ -27,12 +27,12 @@ func (r *SessionService) SetOTP(ctx context.Context, req *pb.OTPPayload) (*pb.Ok
 func (r *SessionService) GetOTP(ctx context.Context, req *pb.OTPPayload) (*pb.OkResponse, error) {
 	_, err := session.
 		OTP().
-		GetOTP(r.GeneralSessionRedisDB.Conn(),
+		GetOTP(r.Ctx.GeneralSessionRedisDB.Conn(),
 			model.OTP{
 				OTP:    req.Otp,
 				Key:    req.Key,
 				UserID: uint(req.UserID),
-			}, r.Env.OTP.ExpireTime)
+			}, r.Ctx.Env.OTP.ExpireTime)
 	if err != nil {
 		return nil, err
 	}
@@ -44,12 +44,12 @@ func (r *SessionService) GetOTP(ctx context.Context, req *pb.OTPPayload) (*pb.Ok
 func (r *SessionService) GetAndExpireOTP(ctx context.Context, req *pb.OTPPayload) (*pb.OkResponse, error) {
 	_, err := session.
 		OTP().
-		GetAndDelOTP(r.GeneralSessionRedisDB.Conn(),
+		GetAndDelOTP(r.Ctx.GeneralSessionRedisDB.Conn(),
 			model.OTP{
 				OTP:    req.Otp,
 				Key:    req.Key,
 				UserID: uint(req.UserID),
-			}, r.Env.OTP.ExpireTime)
+			}, r.Ctx.Env.OTP.ExpireTime)
 	if err != nil {
 		return nil, err
 	}

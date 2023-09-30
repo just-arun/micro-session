@@ -3,6 +3,7 @@ package session
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 
 	"github.com/just-arun/micro-session/model"
 	"github.com/redis/go-redis/v9"
@@ -19,10 +20,11 @@ func (st siteMap) Set(generalRedisDB *redis.Client, data []model.ServiceMap) (er
 	if err != nil {
 		return
 	}
-	return generalRedisDB.Set(context.Background(), "site-map", payload, 0).Err()
+	fmt.Println(string(payload))
+	return generalRedisDB.Set(context.Background(), "site-map", string(payload), 0).Err()
 }
 
-func (st siteMap) Get(generalRedisDB *redis.Client) (data *model.ServiceMap, err error) {
+func (st siteMap) Get(generalRedisDB *redis.Client) (data []model.ServiceMap, err error) {
 	result, err := generalRedisDB.Get(context.Background(), "site-map").Result()
 	if err != nil {
 		return nil, err

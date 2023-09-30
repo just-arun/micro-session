@@ -9,7 +9,7 @@ import (
 )
 
 func (r *SessionService) HaveAccess(ctx context.Context, req *pb.HaveAccessParam) (*pb.HaveAccessResponse, error) {
-	access, err := session.RoleAccess().GetAccessesForRoles(r.GeneralSessionRedisDB, req.Roles)
+	access, err := session.RoleAccess().GetAccessesForRoles(r.Ctx.GeneralSessionRedisDB, req.Roles)
 	if err != nil {
 		return nil, err
 	}
@@ -22,12 +22,12 @@ func (r *SessionService) HaveAccess(ctx context.Context, req *pb.HaveAccessParam
 }
 
 func (r *SessionService) VerifyUserSession(ctx context.Context, req *pb.VerifyUserSessionParams) (*pb.VerifyUserSessionResponse, error) {
-	key, _, err := util.Jwt().ExtractClaims(r.Env.Secret, req.Token)
+	key, _, err := util.Jwt().ExtractClaims(r.Ctx.Env.Secret, req.Token)
 	if err != nil {
 		return nil, err
 	}
 
-	data, err := session.UserSession().GetOneBySessionID(r.UserSessionRedisDB, key)
+	data, err := session.UserSession().GetOneBySessionID(r.Ctx.UserSessionRedisDB, key)
 	if err != nil {
 		return nil, err
 	}

@@ -15,25 +15,25 @@ func (r *SessionService) SetUserSession(ctx context.Context, req *pb.UserSession
 	tokenPayload := util.NewUUID()
 	tokenPayload2 := util.NewUUID()
 
-	err := session.UserSession().Set(r.UserSessionRedisDB, tokenPayload, uint(req.UserID), req.Roles)
+	err := session.UserSession().Set(r.Ctx.UserSessionRedisDB, tokenPayload, uint(req.UserID), req.Roles)
 	if err != nil {
 		fmt.Println("ERR: ", err)
 		return nil, err
 	}
 
-	err = session.UserSession().Set(r.UserSessionRedisDB, tokenPayload2, uint(req.UserID), req.Roles)
+	err = session.UserSession().Set(r.Ctx.UserSessionRedisDB, tokenPayload2, uint(req.UserID), req.Roles)
 	if err != nil {
 		fmt.Println("ERR: ", err)
 		return nil, err
 	}
 
-	access, err := util.Jwt().New(r.Env.Secret, tokenPayload, req.Roles, time.Minute * time.Duration(req.AccessTokenExpireInMinutes))
+	access, err := util.Jwt().New(r.Ctx.Env.Secret, tokenPayload, req.Roles, time.Minute * time.Duration(req.AccessTokenExpireInMinutes))
 	if err != nil {
 		fmt.Println("ERR: ", err)
 		return nil, err
 	}
 
-	refresh, err := util.Jwt().New(r.Env.Secret, tokenPayload2, req.Roles, time.Minute * time.Duration(req.RefreshTokenExpireInMinutes))
+	refresh, err := util.Jwt().New(r.Ctx.Env.Secret, tokenPayload2, req.Roles, time.Minute * time.Duration(req.RefreshTokenExpireInMinutes))
 	if err != nil {
 		fmt.Println("ERR: ", err)
 		return nil, err
@@ -45,7 +45,7 @@ func (r *SessionService) SetUserSession(ctx context.Context, req *pb.UserSession
 }
 
 func (r *SessionService) DeleteUserSession(ctx context.Context, req *pb.DeleteUserSessionPayload) (*pb.OkResponse, error) {
-	err := session.UserSession().DelUserSessionBySessionID(r.UserSessionRedisDB, req.Token)
+	err := session.UserSession().DelUserSessionBySessionID(r.Ctx.UserSessionRedisDB, req.Token)
 	if err != nil {
 		return nil, err
 	}
@@ -55,7 +55,7 @@ func (r *SessionService) DeleteUserSession(ctx context.Context, req *pb.DeleteUs
 }
 
 func (r *SessionService) ClearUserAllSession(ctx context.Context, req *pb.ClearUserAllSessionPayload) (*pb.OkResponse, error) {
-	err := session.UserSession().DelUserSessionByUserID(r.UserSessionRedisDB, uint(req.UserID))
+	err := session.UserSession().DelUserSessionByUserID(r.Ctx.UserSessionRedisDB, uint(req.UserID))
 	if err != nil {
 		return nil, err
 	}
@@ -65,12 +65,12 @@ func (r *SessionService) ClearUserAllSession(ctx context.Context, req *pb.ClearU
 }
 
 func (r *SessionService) GetUserSessionRefreshToken(ctx context.Context, req *pb.GetUserSessionRefreshTokenPayload) (*pb.SetUserSessionResponse, error) {
-	key, _, err := util.Jwt().ExtractClaims(r.Env.Secret, req.RefreshToken)
+	key, _, err := util.Jwt().ExtractClaims(r.Ctx.Env.Secret, req.RefreshToken)
 	if err != nil {
 		return nil, err
 	}
 	
-	sessionData, err := session.UserSession().GetOneBySessionID(r.UserSessionRedisDB, key)
+	sessionData, err := session.UserSession().GetOneBySessionID(r.Ctx.UserSessionRedisDB, key)
 	if err != nil {
 		fmt.Println("ERR: ", err)
 		return nil, err
@@ -78,13 +78,13 @@ func (r *SessionService) GetUserSessionRefreshToken(ctx context.Context, req *pb
 
 	tokenPayload := util.NewUUID()
 	
-	err = session.UserSession().Set(r.UserSessionRedisDB, tokenPayload, sessionData.UserID, sessionData.Roles)
+	err = session.UserSession().Set(r.Ctx.UserSessionRedisDB, tokenPayload, sessionData.UserID, sessionData.Roles)
 	if err != nil {
 		fmt.Println("ERR: ", err)
 		return nil, err
 	}
 	
-	access, err := util.Jwt().New(r.Env.Secret, tokenPayload, sessionData.Roles, time.Minute * time.Duration(req.AccessTokenExpireInMinutes))
+	access, err := util.Jwt().New(r.Ctx.Env.Secret, tokenPayload, sessionData.Roles, time.Minute * time.Duration(req.AccessTokenExpireInMinutes))
 	if err != nil {
 		fmt.Println("ERR: ", err)
 		return nil, err

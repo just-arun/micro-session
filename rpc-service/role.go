@@ -17,7 +17,7 @@ func (r *SessionService) SetRole(ctx context.Context, req *pb.RoleObject) (*pb.O
 			Key:  v.Key,
 		})
 	}
-	err := session.RoleAccess().Set(r.GeneralSessionRedisDB, req.Name, &model.Role{
+	err := session.RoleAccess().Set(r.Ctx.GeneralSessionRedisDB, req.Name, &model.Role{
 		ID:       uint(req.Id),
 		Name:     req.Name,
 		Accesses: accesses,
@@ -30,16 +30,15 @@ func (r *SessionService) SetRole(ctx context.Context, req *pb.RoleObject) (*pb.O
 	}, nil
 }
 
-
 func (r *SessionService) GetRole(ctx context.Context, req *pb.GetRoleParam) (*pb.GetRoleReponse, error) {
 	accesses := []*pb.AccessObject{}
-	data, err := session.RoleAccess().Get(r.GeneralSessionRedisDB, req.Name)
+	data, err := session.RoleAccess().Get(r.Ctx.GeneralSessionRedisDB, req.Name)
 	if err != nil {
 		return nil, err
 	}
 	for _, v := range data.Accesses {
 		accesses = append(accesses, &pb.AccessObject{
-			Id: uint64(v.ID),
+			Id:  uint64(v.ID),
 			Key: v.Key,
 		})
 	}
@@ -47,6 +46,3 @@ func (r *SessionService) GetRole(ctx context.Context, req *pb.GetRoleParam) (*pb
 		Access: accesses,
 	}, nil
 }
-
-
-
