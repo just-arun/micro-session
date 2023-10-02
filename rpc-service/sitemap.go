@@ -35,7 +35,6 @@ func (r *SessionService) GetServiceMap(req *pb.NoPayload, stream pb.SessionServi
 	if err != nil {
 		return err
 	}
-	fmt.Println("DA: ", data)
 	for _, v := range data {
 		err = stream.Send(&pb.ServiceMapData{
 			Id:    uint64(v.ID),
