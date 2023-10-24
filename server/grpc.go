@@ -13,7 +13,7 @@ import (
 	"github.com/just-arun/micro-session/util"
 )
 
-func Run(appEnv, port string) {
+func Run(appEnv, context, port string) {
 	con, err := net.Listen("tcp", port)
 
 	if err != nil {
@@ -24,7 +24,7 @@ func Run(appEnv, port string) {
 
 	ctxStruct := &rpcservice.SessionService{}
 	env := &model.Env{}
-	util.GetEnv(".env."+appEnv, ".", &env)
+	util.GetEnv(".env."+appEnv, context, &env)
 	ctx := &model.GlobalCtx{}
 	userSessionClient := boot.Redis(env.UserSession.Address, env.UserSession.Password, 0, "User session")
 	ctx.UserSessionRedisDB = userSessionClient

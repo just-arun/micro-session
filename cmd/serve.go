@@ -22,7 +22,19 @@ This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("serve called")
-		server.Run("dev", ":4200")
+		env, err := cmd.Flags().GetString("environment")
+		if err != nil {
+			panic("env is not provided")
+		}
+		port, err := cmd.Flags().GetString("port")
+		if err != nil {
+			panic("port is not provided")
+		}
+		ctx, err := cmd.Flags().GetString("environment-context")
+		if err != nil {
+			panic("environment-context is not provided")
+		}
+		server.Run(env, ctx, port)
 	},
 }
 
@@ -38,4 +50,7 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// serveCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	serveCmd.Flags().StringP("environment", "e", "dev", "env refers to the file which we call on run time ie if we pass env as `dev` then it will look for `.env.dev.yml` in case of `prod` it is `.env.prod.yml`")
+	serveCmd.Flags().StringP("port", "p", ":4200", "provides port for app to run")
+	serveCmd.Flags().StringP("environment-context", "c", ".", "environment context to find app configuration path")
 }
