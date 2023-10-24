@@ -1,0 +1,13 @@
+userSession:
+    address: "localhost:6379"
+    password: ""
+    db: 0
+generalSession:
+    address: "localhost:6379"
+    password: ""
+    db: 1
+secret: "GoLinuxCloudKey"
+otp:
+    expireTime: 120s
+nats:
+    token: "LvClPXjWSiXwwiFrVPwSdzsqWAPKfzWIzjAvdsCg"
