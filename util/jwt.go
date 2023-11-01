@@ -34,7 +34,7 @@ func (st *jsonWebToken) New(secret, sessionID string, roles []string, expTime ti
 
 func (st *jsonWebToken) VerifyJWT(secret, tokenString string) (parsedToken *jwt.Token, err error) {
 	parsedToken, err = jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		_, ok := token.Method.(*jwt.SigningMethodECDSA)
+		_, ok := token.Method.(*jwt.SigningMethodHMAC)
 		if !ok {
 			return nil, errors.New("you're unauthorized")
 		}
@@ -51,7 +51,7 @@ func (st *jsonWebToken) VerifyJWT(secret, tokenString string) (parsedToken *jwt.
 func (st *jsonWebToken) ExtractClaims(secret, tokenString string) (sessionID string, roles []string, err error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 
-		if _, ok := token.Method.(*jwt.SigningMethodECDSA); !ok {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("there's an error with the signing method")
 		}
 		return []byte(secret), nil

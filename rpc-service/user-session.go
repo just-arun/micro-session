@@ -27,13 +27,14 @@ func (r *SessionService) SetUserSession(ctx context.Context, req *pb.UserSession
 		return nil, err
 	}
 
-	access, err := util.Jwt().New(r.Ctx.Env.Secret, tokenPayload, req.Roles, time.Minute * time.Duration(req.AccessTokenExpireInMinutes))
+	fmt.Println("REQ PAY", req.AccessTokenExpireInMinutes)
+	access, err := util.Jwt().New(r.Ctx.Env.Secret, tokenPayload, req.Roles, time.Minute*time.Duration(req.AccessTokenExpireInMinutes))
 	if err != nil {
 		fmt.Println("ERR: ", err)
 		return nil, err
 	}
 
-	refresh, err := util.Jwt().New(r.Ctx.Env.Secret, tokenPayload2, req.Roles, time.Minute * time.Duration(req.RefreshTokenExpireInMinutes))
+	refresh, err := util.Jwt().New(r.Ctx.Env.Secret, tokenPayload2, req.Roles, time.Minute*time.Duration(req.RefreshTokenExpireInMinutes))
 	if err != nil {
 		fmt.Println("ERR: ", err)
 		return nil, err
@@ -69,7 +70,7 @@ func (r *SessionService) GetUserSessionRefreshToken(ctx context.Context, req *pb
 	if err != nil {
 		return nil, err
 	}
-	
+
 	sessionData, err := session.UserSession().GetOneBySessionID(r.Ctx.UserSessionRedisDB, key)
 	if err != nil {
 		fmt.Println("ERR: ", err)
@@ -77,21 +78,21 @@ func (r *SessionService) GetUserSessionRefreshToken(ctx context.Context, req *pb
 	}
 
 	tokenPayload := util.NewUUID()
-	
+
 	err = session.UserSession().Set(r.Ctx.UserSessionRedisDB, tokenPayload, sessionData.UserID, sessionData.Roles)
 	if err != nil {
 		fmt.Println("ERR: ", err)
 		return nil, err
 	}
-	
-	access, err := util.Jwt().New(r.Ctx.Env.Secret, tokenPayload, sessionData.Roles, time.Minute * time.Duration(req.AccessTokenExpireInMinutes))
+
+	access, err := util.Jwt().New(r.Ctx.Env.Secret, tokenPayload, sessionData.Roles, time.Minute*time.Duration(req.AccessTokenExpireInMinutes))
 	if err != nil {
 		fmt.Println("ERR: ", err)
 		return nil, err
 	}
-	
+
 	return &pb.SetUserSessionResponse{
-		Token: access,
+		Token:   access,
 		Refresh: req.RefreshToken,
 	}, nil
 }

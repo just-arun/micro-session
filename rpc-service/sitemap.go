@@ -1,7 +1,6 @@
 package rpcservice
 
 import (
-	"fmt"
 	"io"
 
 	pb "github.com/just-arun/micro-session-proto"
@@ -30,7 +29,6 @@ func (r *SessionService) SetServiceMap(stream pb.SessionService_SetServiceMapSer
 }
 
 func (r *SessionService) GetServiceMap(req *pb.NoPayload, stream pb.SessionService_GetServiceMapServer) error {
-	fmt.Println("GetServiceMap called")
 	data, err := session.SiteMap().Get(r.Ctx.GeneralSessionRedisDB)
 	if err != nil {
 		return err

@@ -2,6 +2,7 @@ package rpcservice
 
 import (
 	"context"
+	"fmt"
 
 	pb "github.com/just-arun/micro-session-proto"
 	"github.com/just-arun/micro-session/session"
@@ -16,6 +17,8 @@ func (r *SessionService) HaveAccess(ctx context.Context, req *pb.HaveAccessParam
 	hasRole := util.Array().Includes(access, func(item string, _ int) bool {
 		return item == req.AccessSlug
 	})
+	fmt.Println("ACCESS", access)
+	fmt.Println("REQ.aCCESSsLUG", req.AccessSlug)
 	return &pb.HaveAccessResponse{
 		Access: hasRole,
 	}, nil
@@ -24,6 +27,7 @@ func (r *SessionService) HaveAccess(ctx context.Context, req *pb.HaveAccessParam
 func (r *SessionService) VerifyUserSession(ctx context.Context, req *pb.VerifyUserSessionParams) (*pb.VerifyUserSessionResponse, error) {
 	key, _, err := util.Jwt().ExtractClaims(r.Ctx.Env.Secret, req.Token)
 	if err != nil {
+		fmt.Println("Dal", err.Error())
 		return nil, err
 	}
 
